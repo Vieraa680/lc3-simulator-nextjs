@@ -1,37 +1,104 @@
+# LC-3 Simulator
 
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+Web-based LC-3-style simulator built with Next.js. The app lets you load hexadecimal instructions into memory from a chosen start address and execute the program cycle by cycle while inspecting registers and memory.
 
-## Getting Started
+## What It Does
 
-First, run the development server:
+- Lets you edit the program manually in a textarea, one instruction per line.
+- Supports uploading `.txt` files with valid hexadecimal content.
+- Loads the program into a simulated memory space of `65,536` positions.
+- Executes one instruction at a time through `Run Cycle`.
+- Displays the state of registers `R0` through `R7`, plus `PC`, `N`, `Z`, and `P`.
+- Displays the full memory space in a virtualized table.
+- Lets you clear only `R0` through `R7` or reset the entire simulator state.
+- Persists the dark mode preference in `localStorage`.
+
+## How To Use
+
+1. Enter the program in hexadecimal, one 16-bit instruction per line.
+2. Optionally upload a `.txt` file in the same format.
+3. Set a start address in `Start Address`.
+4. Click `Load Program` to copy the instructions into memory and position the `PC`.
+5. Run the program one step at a time with `Run Cycle`.
+6. Inspect register and memory changes after each cycle.
+
+## Supported Instructions
+
+The simulator API currently implements these operations:
+
+- `ADD`
+- `AND`
+- `NOT`
+- `LD`
+- `LDI`
+- `LDR`
+- `LEA`
+- `ST`
+- `STI`
+- `STR`
+- `BR`
+- `JMP` / `RET`
+- `JSR` / `JSRR`
+- `MUL`
+- `SUB`
+
+## Current Limitations
+
+- The simulator is not a complete implementation of the standard LC-3 ISA.
+- `MUL` and `SUB` use custom opcodes in the API.
+- There is no continuous execution mode or `HALT` instruction exposed in the UI; each click on `Run Cycle` executes a single CPU cycle.
+- The program must already be assembled into hexadecimal; there is no assembler or mnemonic input support.
+- Simulator state lives in memory inside the Next.js API route. If the server restarts, the state is lost.
+- The `Start Address` field accepts hexadecimal-looking input in the UI, but the API parses it with `parseInt(..., 10)`. In the current implementation, decimal values are the safest option.
+
+## Tech Stack
+
+- Next.js 14
+- React 18
+- Material UI
+- Sass Modules
+- `react-virtualized` for the memory table
+
+## Scripts
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Development server: `http://localhost:8012`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+Local production server: `http://localhost:3002`
 
-## Learn More
+## Main API
 
-To learn more about Next.js, take a look at the following resources:
+Simulation is handled by [`src/pages/api/simulator.js`](./src/pages/api/simulator.js):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `POST /api/simulator`: loads the program into memory and sets the `PC`.
+- `GET /api/simulator`: executes one CPU cycle and returns registers and memory.
+- `DELETE /api/simulator?type=R0-R7`: clears only the general-purpose registers.
+- `DELETE /api/simulator?type=all`: resets memory, registers, and the internal instruction counter.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Relevant Structure
 
-## Deploy on Vercel
+- [`src/pages/index.tsx`](./src/pages/index.tsx): main simulator interface.
+- [`src/pages/api/simulator.js`](./src/pages/api/simulator.js): CPU and memory simulation logic.
+- [`src/hooks/FileUpload/useFileUpload.tsx`](./src/hooks/FileUpload/useFileUpload.tsx): uploaded file reading and validation.
+- [`public/css/Styles.module.scss`](./public/css/Styles.module.scss): main UI styles.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Expected Program Format
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Each line must contain one hexadecimal instruction. Example:
+
+```text
+1261
+1442
+56A0
+```
+
+Empty lines are ignored when the program is loaded.
