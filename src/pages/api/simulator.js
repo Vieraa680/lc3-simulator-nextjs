@@ -214,7 +214,7 @@ function executeCycle() {
 
 
     default:
-      throw new Error('Instrucción no soportada')
+      throw new Error('Unsupported instruction')
   }
   instructionCount++
 }
@@ -226,7 +226,7 @@ export default function handler(req = NextApiRequest, res = NextApiResponse) {
       const start = parseInt(startAddress || 0, 10)
 
       if (isNaN(start) || start < 0 || start >= 65536) {
-        return res.status(400).json({ message: "Dirección inicial inválida" })
+        return res.status(400).json({ message: 'Invalid start address' })
       }
 
       for (let i = 0; i < program.length; i++) {
@@ -234,7 +234,7 @@ export default function handler(req = NextApiRequest, res = NextApiResponse) {
       }
       registers.PC = start
       instructionCount = 0
-      res.status(200).json({ message: 'Programa cargado exitosamente' })
+      res.status(200).json({ message: 'Program loaded successfully' })
     } else if (req.method === 'GET') {
       executeCycle()
       res.status(200).json({ registers, memory, instructionCount })
@@ -242,16 +242,16 @@ export default function handler(req = NextApiRequest, res = NextApiResponse) {
       const { type } = req.query
       if (type === 'all') {
         resetSimulator()
-        res.status(200).json({ message: 'Estado del simulador limpiado exitosamente', registers: { ...registers }, memory: [...memory] })
+        res.status(200).json({ message: 'Simulator state cleared successfully', registers: { ...registers }, memory: [...memory] })
         console.log(memory)
       } else if (type === 'R0-R7') {
         clearRegistersR0toR7()
-        res.status(200).json({ message: 'Registros R0-R7 limpiados exitosamente', registers: { ...registers } })
+        res.status(200).json({ message: 'R0-R7 registers cleared successfully', registers: { ...registers } })
       } else {
-        res.status(400).json({ message: 'Tipo de limpieza no especificado o inválido' })
+        res.status(400).json({ message: 'Missing or invalid clear type' })
       }
     } else {
-      res.status(405).json({ message: 'Método no permitido' })
+      res.status(405).json({ message: 'Method not allowed' })
     }
   } catch (error) {
     res.status(500).json({ error: error.message })

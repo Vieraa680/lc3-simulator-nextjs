@@ -16,7 +16,6 @@ import "react-virtualized/styles.css";
 const Dashboard: FunctionComponent = (props: any) => {
   const router = useRouter()
   const { history: navigation, match: { params = {} } = {} } = props
-  const [lang, setlang] = React.useState<any>('en')
   const theme = { ...Stylesmodulescss }
   const classes = { ...Stylesmodulescss }
   const textareaRef = useRef(null)
@@ -50,23 +49,6 @@ const Dashboard: FunctionComponent = (props: any) => {
     }
   }
 
-  // Theme selection
-
-  React.useEffect(() => {
-    if (typeof langStrings !== 'undefined') {
-      setlang(langStrings[localStorage.getItem('aptugolang') || 'en'])
-    }
-  }, [])
-
-  const langStrings = {
-    es: {
-      uploadFile: 'Subir archivo',
-    },
-    en: {
-      uploadFile: 'Upload',
-    },
-  }
-
   const handleProgramChange = (event) => {
     const text = event.target.value
     const filteredText = text
@@ -95,7 +77,7 @@ const Dashboard: FunctionComponent = (props: any) => {
         console.error(error)
       })
     } catch (e) {
-      console.log('Error al cargar el programa:', e)
+      console.log('Error loading program:', e)
     }
   }
 
@@ -113,7 +95,7 @@ const Dashboard: FunctionComponent = (props: any) => {
       updateMemory(output)
       setsimulatorOutput(output)
     } catch (e) {
-      console.log('Error al ejecutar el ciclo:', e)
+      console.log('Error running cycle:', e)
     }
   }
 
@@ -128,7 +110,7 @@ const Dashboard: FunctionComponent = (props: any) => {
         setregisters(data.registers)
       }
     } catch (e) {
-      console.log('Error al limpiar los registros R0-R7:', e)
+      console.log('Error clearing R0-R7 registers:', e)
     }
   }
 
@@ -151,7 +133,7 @@ const Dashboard: FunctionComponent = (props: any) => {
         updateMemory(data)
       }
     } catch (e) {
-      console.log('Error al limpiar todos los registros:', e)
+      console.log('Error clearing all registers:', e)
     }
   }
 
@@ -168,7 +150,7 @@ const Dashboard: FunctionComponent = (props: any) => {
 
   const { fileName, error, handleFileChange } = useFileUpload(
     (content) => {
-      console.log('Contenido del archivo:', content)
+      console.log('File content:', content)
       setprogram(content)
     },
     ['.txt'],
@@ -209,7 +191,7 @@ const Dashboard: FunctionComponent = (props: any) => {
   const rowGetter = ({ index }) => {
     const chunk = getChunk(index)
     return {
-      direccion: index * colsPerPage,
+      address: index * colsPerPage,
       ...chunk.reduce((acc, value, i) => {
         acc[`col${i + 1}`] = value
         return acc
@@ -288,7 +270,7 @@ const Dashboard: FunctionComponent = (props: any) => {
               <TextareaAutosize
                 minRows="10"
                 maxRows={15}
-                placeholder="Ingrese el código en hexadecimal, una instrucción por línea"
+                placeholder="Enter hexadecimal code, one instruction per line"
                 value={program}
                 className={darkMode ? theme.darkTextArea : theme.textArea}
                 onChange={handleProgramChange}
@@ -345,8 +327,8 @@ const Dashboard: FunctionComponent = (props: any) => {
                         rowGetter={rowGetter}
                       >
                         <Column
-                          label="Direction"
-                          dataKey="direccion"
+                          label="Address"
+                          dataKey="address"
                           width={width * 0.25}
                           headerClassName={theme.header_column}
                           className={theme.data_column}

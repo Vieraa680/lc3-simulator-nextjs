@@ -34,7 +34,7 @@ export const useFileUpload = (onFileRead, acceptedFileTypes = ['.txt'], validate
         if (typeof onFileRead === 'function') {
           onFileRead(content)
         } else {
-          console.error('onFileRead no es una función válida')
+          console.error('onFileRead is not a valid function')
         }
       }
       reader.readAsText(file)
