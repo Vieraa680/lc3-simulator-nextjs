@@ -1,0 +1,409 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=League+Spartan:wght@100..900&display=swap');
+
+$greybordergood: #80808054;
+$white: #fcfcfc;
+$darkGrey: #2a2a2a;
+
+.body {
+  background-color: #e2e2e2;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.darkBody {
+  background-color: #3e3e3e;
+
+  * {
+    box-sizing: border-box;
+  }
+}
+
+.templateButtons {
+  text-transform: none;
+  font-size: 0.825rem;
+  font-weight: 700;
+  color: #004aad;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  background-color: #f4f4f4;
+  border: none;
+  box-shadow: 5px 5px 0 #ccc;
+  transition: box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 3px 3px 8px #bbb;
+  }
+
+  &:active {
+    box-shadow: 2px 2px 5px #aaa;
+  }
+}
+
+.navbar {
+  height: 5rem;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f4f4f4;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+
+  .title {
+    font-weight: 700;
+
+    h1 {
+      font-size: 1.5rem;
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.15rem;
+
+      span {
+        color: #4241a9;
+      }
+    }
+  }
+
+  .uploadFile {
+    :global(.MuiButton-root) {
+      display: flex;
+      border-radius: 3rem;
+      gap: 0.5rem;
+    }
+  }
+}
+
+.darkNavbar {
+  @extend .navbar;
+  background-color: $darkGrey;
+
+  .title {
+    font-weight: 700;
+
+    h1 {
+      font-size: 1.5rem;
+      font-family: 'League Spartan', sans-serif;
+      font-weight: 700;
+      color: $white;
+      letter-spacing: 0.15rem;
+
+      span {
+        color: #4241a9;
+      }
+    }
+  }
+
+  .uploadFile {
+    :global(.MuiButton-root) {
+      background-color: #3e3e3e;
+      color: $white;
+      display: flex;
+      border-radius: 3rem;
+      border: 1px solid #010101;
+      gap: 0.5rem;
+    }
+  }
+
+  .switches {
+
+    :global(.MuiSwitch-root) {
+      padding: 12px;
+    }
+
+    :global(.MuiSwitch-track) {
+      background-color: #444;
+    }
+
+    :global(.Mui-checked) {
+      color: $white;
+        background-color: #666;
+      }
+
+    p {
+      color: $white;
+    }
+  }
+}
+
+.skibidiContainer {
+  display: flex;
+  width: 100%;
+  margin-top: 2.5rem;
+  padding: 0 2rem;
+
+  .leftColumn {
+    width: 50%;
+
+    .whieText {
+      font-weight: bold;
+      color: $white;
+    }
+
+    .darkText {
+      @extend .whieText;
+      color: #333;
+    }
+
+    .textarea_container {
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      font-family: 'Roboto', sans-serif;
+      margin-bottom: 1rem;
+
+      .line_numbers {
+        background-color: #f4f4f4;
+        color: #888;
+        text-align: right;
+        padding: 0.5rem;
+        line-height: 1.5rem;
+        border-right: 1px solid #ccc;
+        user-select: none;
+        max-height: calc(1.5em * 10);
+        overflow: hidden;
+      }
+
+      .darkLine_number {
+        @extend .line_numbers;
+        background-color: #313131;
+        border-right: none;
+        color: #978e9d;
+      }
+
+      .textArea {
+        min-width: 75%;
+        resize: none;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-family: 'Roboto', sans-serif;
+        font-size: 1rem;
+        overflow-y: auto;
+        overflow: auto;
+        max-height: calc(1.5em * 10);
+
+        &::-webkit-scrollbar {
+          width: 1rem;
+          height: 2px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+          margin: 1rem 0;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: $greybordergood;
+          border-radius: 20px;
+        }
+      }
+
+      .darkTextArea {
+        @extend .textArea;
+        background-color: $darkGrey;
+        color: #978e9d;
+
+        &::-webkit-scrollbar {
+          width: 1rem;
+          height: 2px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background: transparent;
+          margin: 1rem 0;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: $white;
+          border-radius: 20px;
+        }
+      }
+    }
+
+    .buttons {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+
+      button {
+        @extend .templateButtons;
+      }
+    }
+
+    .memory_container {
+      width: 80%;
+      display: flex;
+      border-radius: 8px;
+      overflow: hidden;
+      flex-direction: column;
+      font-family: 'Roboto', sans-serif;
+      margin-bottom: 1rem;
+
+      .whieText {
+        font-weight: bold;
+        color: $white;
+        text-align: center
+      }
+
+      .darkText {
+        @extend .whieText;
+        color: #333;
+      }
+
+
+      .custom_table {
+        font-family: 'Roboto', sans-serif;
+        font-size: 0.875rem;
+        color: #333;
+
+        .header_column {
+          background-color: #1976d2;
+          color: #fff;
+          font-weight: bold;
+          text-transform: uppercase;
+          text-align: center;
+          padding: 8px;
+        }
+
+        .data_column {
+          border-bottom: 1px solid #e0e0e0;
+          text-align: center;
+          padding: 8px;
+        }
+
+        :global(.ReactVirtualized__Table__headerRow) {
+          display: flex;
+          align-items: center;
+          border-bottom: 2px solid #d0d0d0;
+        }
+
+        :global(.ReactVirtualized__Table__row) {
+          display: flex;
+          align-items: center;
+          transition: background-color 0.2s ease-in-out;
+
+          &:hover {
+            background-color: #f5f5f5;
+          }
+        }
+      }
+
+      .darkCustom_table {
+        background-color: #252526;
+        border-collapse: collapse;
+        width: 100%;
+        color: #f0f0f0;
+
+        .header_column {
+          background-color: #333;
+          padding: .5rem;
+          text-align: center;
+          border-bottom: 2px solid #444;
+          color: $white;
+          font-weight: bold;
+          text-transform: uppercase;
+
+          .data_column {
+            text-align: center;
+            padding: 0.75rem;
+            border-bottom: 1px solid #444;
+          }
+        }
+
+        :global(.ReactVirtualized__Table__row:nth-child(even)) {
+          background-color: #2e2e2e;
+        }
+
+        :global(.ReactVirtualized__Table__row:hover) {
+          background-color: #3b3b3b;
+        }
+      }
+
+    }
+  }
+
+  .rightColumn {
+    width: 50%;
+
+    .whieText {
+      font-weight: bold;
+      color: $white;
+    }
+
+    .darkText {
+      @extend .whieText;
+      color: #333;
+    }
+
+    .registersTable {
+      display: flex;
+      flex-direction: column;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      border: none;
+      border-top: 1px;
+      box-shadow: 5px 5px 0 #7d7d7d;
+      transition: box-shadow 0.3s ease;
+
+      .whieText {
+        font-weight: bold;
+        color: $white;
+      }
+
+      .darkText {
+        @extend .whieText;
+        color: #333;
+      }
+
+      .registerRow {
+        display: flex;
+
+        p {
+          font-size: 1.25rem;
+
+          &:first-child {
+            flex: 1;
+          }
+
+          &:last-child {
+            flex: 3;
+            text-align: center;
+          }
+        }
+
+        padding: 10px 20px;
+
+        &.evenRow {
+          background-color: #f4f4f4;
+        }
+
+        .darkEvenRow {
+          background-color: #2a2a2a;
+        }
+
+        &.oddRow {
+          background-color: #ffffff;
+        }
+
+        &.darkoddRow {
+          background-color: #222222;
+        }
+      }
+    }
+
+    .registersButtons {
+      margin-top: 1.25rem;
+      display: flex;
+      gap: 0.625rem;
+
+      button {
+        @extend .templateButtons;
+      }
+    }
+  }
+}
