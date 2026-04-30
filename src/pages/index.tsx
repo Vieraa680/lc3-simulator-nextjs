@@ -1,17 +1,16 @@
 import { Icon } from '@iconify/react'
 import { fetcher } from '@lib/fetch'
 import Button from '@mui/material/Button'
+import { Box, Paper, TextField } from '@mui/material'
 import Switch from '@mui/material/Switch'
 import TextareaAutosize from '@mui/material/TextareaAutosize'
 import Typography from '@mui/material/Typography'
 import { useRouter } from 'next/router'
 import Stylesmodulescss from 'public/css/Styles.module.scss'
 import React, { FunctionComponent, useRef } from 'react'
-import { Box, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TextField } from "@mui/material"
 import { useFileUpload } from '../hooks/FileUpload/useFileUpload'
-import { FixedSizeList } from "react-window"
-import { Column, Table, AutoSizer } from "react-virtualized";
-import "react-virtualized/styles.css";
+import { AutoSizer, Column, Table } from 'react-virtualized'
+import 'react-virtualized/styles.css'
 
 const Dashboard: FunctionComponent = (props: any) => {
   const router = useRouter()
@@ -38,7 +37,7 @@ const Dashboard: FunctionComponent = (props: any) => {
     P: 0,
   })
   const [memory, setmemory] = React.useState<any>(new Array(65536).fill(0))
-  const [program, setprogram] = React.useState<any>(null)
+  const [program, setprogram] = React.useState<any>('')
   const [simulatorOutput, setsimulatorOutput] = React.useState<any>(null)
   const [startAddress, setStartAddress] = React.useState(0)
 
@@ -66,7 +65,7 @@ const Dashboard: FunctionComponent = (props: any) => {
       const instructions = program.split('\n').filter((line) => line.trim() !== '')
       setinstructionCount(instructions.length)
 
-      const response = await fetcher('/api/simulator', {
+      await fetcher('/api/simulator', {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -101,12 +100,11 @@ const Dashboard: FunctionComponent = (props: any) => {
 
   const clearR0toR7 = async () => {
     try {
-      const response = await fetcher('/api/simulator?type=R0-R7', { method: 'delete' }).catch((error) => {
+      const data = await fetcher('/api/simulator?type=R0-R7', { method: 'delete' }).catch((error) => {
         console.error(error)
       })
 
-      if (response.ok) {
-        const data = await response.json()
+      if (data?.registers) {
         setregisters(data.registers)
       }
     } catch (e) {
@@ -116,7 +114,7 @@ const Dashboard: FunctionComponent = (props: any) => {
 
   const clearAllRegisters = async () => {
     try {
-      const response = await fetcher('/api/simulator?type=all', { method: 'delete' }).catch((error) => {
+      const data = await fetcher('/api/simulator?type=all', { method: 'delete' }).catch((error) => {
         console.error(error)
       })
 
@@ -126,10 +124,8 @@ const Dashboard: FunctionComponent = (props: any) => {
 
       setprogram('')
 
-      if (response.ok) {
-        const data = await response.json()
+      if (data?.registers) {
         setregisters(data.registers)
-        console.log(data)
         updateMemory(data)
       }
     } catch (e) {
@@ -150,7 +146,6 @@ const Dashboard: FunctionComponent = (props: any) => {
 
   const { fileName, error, handleFileChange } = useFileUpload(
     (content) => {
-      console.log('File content:', content)
       setprogram(content)
     },
     ['.txt'],
@@ -200,7 +195,7 @@ const Dashboard: FunctionComponent = (props: any) => {
   }
 
   React.useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       const savedDarkMode = localStorage.getItem('darkMode')
       if (savedDarkMode) {
         setdarkMode(JSON.parse(savedDarkMode))
@@ -209,7 +204,7 @@ const Dashboard: FunctionComponent = (props: any) => {
   }, [])
 
   React.useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (typeof window !== 'undefined') {
       localStorage.setItem('darkMode', JSON.stringify(darkMode))
     }
   }, [darkMode])
@@ -357,7 +352,12 @@ const Dashboard: FunctionComponent = (props: any) => {
             <div title="div registersTable" data-title="div registersTable" className={theme.registersTable}>
               {Object.entries(registers).map(([key, value], index) => {
                 return (
-                  <div title="div" data-title="div" className={`${theme.registerRow} ${index % 2 === 0 ? darkMode ? theme.darkevenRow : theme.evenRow : darkMode ? theme.darkoddRow : theme.oddRow}`}>
+                  <div
+                    key={key}
+                    title="div"
+                    data-title="div"
+                    className={`${theme.registerRow} ${index % 2 === 0 ? darkMode ? theme.darkevenRow : theme.evenRow : darkMode ? theme.darkoddRow : theme.oddRow}`}
+                  >
                     <Typography variant="h6" className={darkMode ? theme.whieText : theme.darkText}>
                       <strong>{key}</strong>
                     </Typography>

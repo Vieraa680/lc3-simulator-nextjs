@@ -1,5 +1,3 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-
 let memory = new Array(65536).fill(0)
 let registers = {
   R0: 0,
@@ -219,7 +217,7 @@ function executeCycle() {
   instructionCount++
 }
 
-export default function handler(req = NextApiRequest, res = NextApiResponse) {
+export default function handler(req, res) {
   try {
     if (req.method === 'POST') {
       const { program, startAddress  } = req.body
@@ -243,7 +241,6 @@ export default function handler(req = NextApiRequest, res = NextApiResponse) {
       if (type === 'all') {
         resetSimulator()
         res.status(200).json({ message: 'Simulator state cleared successfully', registers: { ...registers }, memory: [...memory] })
-        console.log(memory)
       } else if (type === 'R0-R7') {
         clearRegistersR0toR7()
         res.status(200).json({ message: 'R0-R7 registers cleared successfully', registers: { ...registers } })
