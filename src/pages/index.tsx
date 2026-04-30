@@ -22,6 +22,8 @@ const Dashboard: FunctionComponent = (props: any) => {
   const [lines, setlines] = React.useState<any>(10)
   const [darkMode, setdarkMode] = React.useState<any>(false)
   const [instructionCount, setinstructionCount] = React.useState<any>(0)
+  const [simulatorError, setsimulatorError] = React.useState<string | null>(null)
+  const [hasLoadedProgram, sethasLoadedProgram] = React.useState(false)
   const [registers, setregisters] = React.useState<any>({
     R0: 0,
     R1: 0,
@@ -56,26 +58,44 @@ const Dashboard: FunctionComponent = (props: any) => {
       .join('\n')
     const lineCount = Math.max(10, text.split('\n').length)
     setprogram(filteredText)
+    sethasLoadedProgram(false)
+    setsimulatorError(null)
 
     setlines(lineCount)
   }
 
   const loadProgram = async () => {
-    try {
-      const instructions = program.split('\n').filter((line) => line.trim() !== '')
-      setinstructionCount(instructions.length)
+    const instructions = program.split('\n').filter((line) => line.trim() !== '')
 
-      await fetcher('/api/simulator', {
+    if (instructions.length === 0) {
+      setsimulatorError('Enter at least one instruction before loading the program.')
+      return
+    }
+
+    try {
+      const response = await fetch('/api/simulator', {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           program: instructions,
           startAddress: startAddress || 0,
         }),
-      }).catch((error) => {
-        console.error(error)
       })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setsimulatorError(data?.message || 'Could not load the program.')
+        sethasLoadedProgram(false)
+        return
+      }
+
+      setinstructionCount(instructions.length)
+      sethasLoadedProgram(true)
+      setsimulatorError(null)
     } catch (e) {
+      sethasLoadedProgram(false)
+      setsimulatorError('Could not load the program.')
       console.log('Error loading program:', e)
     }
   }
@@ -87,13 +107,26 @@ const Dashboard: FunctionComponent = (props: any) => {
   }
 
   const runCycle = async () => {
+    if (!hasLoadedProgram) {
+      setsimulatorError('Load a program before running a cycle.')
+      return
+    }
+
     try {
       const response = await fetch('/api/simulator')
       const output = await response.json()
+
+      if (!response.ok) {
+        setsimulatorError(output?.message || 'Could not run the cycle.')
+        return
+      }
+
       updateRegisters(output)
       updateMemory(output)
       setsimulatorOutput(output)
+      setsimulatorError(null)
     } catch (e) {
+      setsimulatorError('Could not run the cycle.')
       console.log('Error running cycle:', e)
     }
   }
@@ -106,6 +139,7 @@ const Dashboard: FunctionComponent = (props: any) => {
 
       if (data?.registers) {
         setregisters(data.registers)
+        setsimulatorError(null)
       }
     } catch (e) {
       console.log('Error clearing R0-R7 registers:', e)
@@ -121,6 +155,8 @@ const Dashboard: FunctionComponent = (props: any) => {
       setsimulatorOutput(null)
 
       setinstructionCount(null)
+      sethasLoadedProgram(false)
+      setsimulatorError(null)
 
       setprogram('')
 
@@ -147,6 +183,8 @@ const Dashboard: FunctionComponent = (props: any) => {
   const { fileName, error, handleFileChange } = useFileUpload(
     (content) => {
       setprogram(content)
+      sethasLoadedProgram(false)
+      setsimulatorError(null)
     },
     ['.txt'],
     isValidHexFile
@@ -303,6 +341,12 @@ const Dashboard: FunctionComponent = (props: any) => {
                 }}
               />
             </div>
+
+            {simulatorError && (
+              <Typography variant="body2" color="error" style={{ marginBottom: '16px' }}>
+                {simulatorError}
+              </Typography>
+            )}
 
             <div title="div textArea Container" data-title="div textArea Container" className={theme.memory_container}>
               <Box sx={{ p: 3, backgroundColor: darkMode ? "#313131" : "#f0f0f0" }}>

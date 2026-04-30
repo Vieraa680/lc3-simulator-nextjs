@@ -1,4 +1,5 @@
 let memory = new Array(65536).fill(0)
+let isProgramLoaded = false
 let registers = {
   R0: 0,
   R1: 0,
@@ -17,6 +18,7 @@ let instructionCount = 0
 
 function resetSimulator() {
   memory.fill(0)
+  isProgramLoaded = false
   registers = {
     R0: 0,
     R1: 0,
@@ -221,6 +223,11 @@ export default function handler(req, res) {
   try {
     if (req.method === 'POST') {
       const { program, startAddress  } = req.body
+
+      if (!Array.isArray(program) || program.length === 0) {
+        return res.status(400).json({ message: 'No program provided' })
+      }
+
       const start = parseInt(startAddress || 0, 10)
 
       if (isNaN(start) || start < 0 || start >= 65536) {
@@ -232,8 +239,13 @@ export default function handler(req, res) {
       }
       registers.PC = start
       instructionCount = 0
+      isProgramLoaded = true
       res.status(200).json({ message: 'Program loaded successfully' })
     } else if (req.method === 'GET') {
+      if (!isProgramLoaded) {
+        return res.status(400).json({ message: 'No program loaded' })
+      }
+
       executeCycle()
       res.status(200).json({ registers, memory, instructionCount })
     } else if (req.method === 'DELETE') {
